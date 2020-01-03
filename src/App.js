@@ -1,26 +1,60 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import data from "./data/data";
+
+import NodeElement from "./components/NodeElement";
+
+class App extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            nodeList: []
+        };
+
+        this.deleteNode =  this.deleteNode.bind(this);
+    }
+
+    componentDidMount() {
+        this.setState({nodeList: data});
+    }
+
+    deleteNode(id) {
+        let nodeList = this.state.nodeList;
+
+        nodeList = nodeList.filter(node => {
+            if (!search(node)) return node;
+        });
+
+        function search(node) {
+            if (node.id !== id) return true;
+
+            if (node.childrens) {
+                return node.childrens.some(item => search(item));
+            }
+        }
+
+        this.setState({nodeList});
+    };
+
+    render() {
+        const nodeList = this.state.nodeList;
+
+        return (
+          <div>
+              {nodeList.map(el => (
+                  <NodeElement
+                      key={ el.id }
+                      id={ el.id }
+                      name={ el.name }
+                      childrens={ el.childrens }
+                      onDeleteNode={ id => {this.deleteNode(id)} }
+                  />
+              ))}
+          </div>
+      );
+    };
 }
 
 export default App;
